@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,7 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.superchampions.model.Evento
+import com.example.superchampions.ui.components.CardEvento
+import com.example.superchampions.ui.theme.CorPrimaria
 import com.example.superchampions.ui.viewmodel.EventosUiState
 import com.example.superchampions.ui.viewmodel.EventosViewModel
 
@@ -37,14 +37,14 @@ fun EventsScreen(viewModel: EventosViewModel = viewModel(factory = EventosViewMo
         when (uiState) {
             is EventosUiState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = CorPrimaria)
                 }
             }
             is EventosUiState.Success -> {
                 val eventos = (uiState as EventosUiState.Success).eventos
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(eventos) { evento ->
-                        CartaoEvento(evento = evento)
+                        CardEvento(evento = evento, modifier = Modifier.fillMaxWidth())
                     }
                 }
             }
@@ -54,18 +54,6 @@ fun EventsScreen(viewModel: EventosViewModel = viewModel(factory = EventosViewMo
                     Text(text = mensagem)
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun CartaoEvento(evento: Evento) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = evento.titulo, style = MaterialTheme.typography.titleSmall)
-            Text(text = "Data: ${evento.data}", style = MaterialTheme.typography.bodySmall)
-            Text(text = "Local: ${evento.local}", style = MaterialTheme.typography.bodySmall)
-            Text(text = "Premiação: ${evento.premiacao}", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

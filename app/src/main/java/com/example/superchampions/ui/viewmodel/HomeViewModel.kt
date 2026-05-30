@@ -25,9 +25,11 @@ class HomeViewModel(private val repository: CampeoesRepository) : ViewModel() {
             _uiState.update {
                 try {
                     val topTres = repository.getRanking().take(3)
-                    HomeUiState.Success(topAtletas = topTres)
+                    val eventos = repository.getEventosProximos()
+                    val perfil = repository.getPerfil()
+                    HomeUiState.Success(topAtletas = topTres, eventos = eventos, perfil = perfil)
                 } catch (e: Exception) {
-                    HomeUiState.Error("Erro ao carregar ranking: ${e.message}")
+                    HomeUiState.Error("Erro ao carregar destaques: ${e.message}")
                 }
             }
         }

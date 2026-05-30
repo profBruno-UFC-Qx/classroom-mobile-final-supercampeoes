@@ -1,25 +1,66 @@
 package com.example.superchampions.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircleOutline
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.outlined.EventAvailable
+import androidx.compose.material.icons.outlined.SportsKabaddi
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.superchampions.model.Atleta
+import com.example.superchampions.model.Evento
+import com.example.superchampions.model.Perfil
+import com.example.superchampions.ui.components.CardEvento
+import com.example.superchampions.ui.components.ItemAcao
+import com.example.superchampions.ui.components.PessoaRanking
+import com.example.superchampions.ui.theme.CorContainer
+import com.example.superchampions.ui.theme.CorDourado
+import com.example.superchampions.ui.theme.CorPrimaria
+import com.example.superchampions.ui.theme.CorSecundaria
+import com.example.superchampions.ui.theme.CorTextoSecundario
 import com.example.superchampions.ui.viewmodel.HomeUiState
 import com.example.superchampions.ui.viewmodel.HomeViewModel
 
@@ -27,49 +68,279 @@ import com.example.superchampions.ui.viewmodel.HomeViewModel
 fun HomeScreen(viewModel: HomeViewModel = viewModel(factory = HomeViewModel.Factory)) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text(
-            text = "Super Campeões",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        Text(
-            text = "Top 3 do Ranking",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        when (uiState) {
-            is HomeUiState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
+    when (uiState) {
+        is HomeUiState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = CorSecundaria)
             }
-            is HomeUiState.Success -> {
-                val atletas = (uiState as HomeUiState.Success).topAtletas
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(atletas) { atleta ->
-                        CartaoAtletaHome(atleta = atleta)
-                    }
-                }
-            }
-            is HomeUiState.Error -> {
-                val mensagem = (uiState as HomeUiState.Error).message
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = mensagem)
-                }
+        }
+        is HomeUiState.Success -> {
+            val estado = uiState as HomeUiState.Success
+            ConteudoHome(
+                topAtletas = estado.topAtletas,
+                eventos = estado.eventos,
+                perfil = estado.perfil
+            )
+        }
+        is HomeUiState.Error -> {
+            val mensagem = (uiState as HomeUiState.Error).message
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = mensagem, color = CorTextoSecundario)
             }
         }
     }
 }
 
 @Composable
-fun CartaoAtletaHome(atleta: Atleta) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = "#${atleta.posicao} ${atleta.nome}", style = MaterialTheme.typography.titleSmall)
-            Text(text = "Academia: ${atleta.academia}", style = MaterialTheme.typography.bodySmall)
-            Text(text = "Pontos: ${atleta.pontos}", style = MaterialTheme.typography.bodySmall)
+fun ConteudoHome(topAtletas: List<Atleta>, eventos: List<Evento>, perfil: Perfil?) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 16.dp)
+    ) {
+        item { Spacer(modifier = Modifier.height(16.dp)) }
+        if (eventos.isNotEmpty()) {
+            item { BannerHero(evento = eventos.first()) }
+        }
+        item { Spacer(modifier = Modifier.height(32.dp)) }
+        item { AcoesRapidas() }
+        item { Spacer(modifier = Modifier.height(32.dp)) }
+        item { SecaoEventos(eventos) }
+        item { Spacer(modifier = Modifier.height(32.dp)) }
+        item { CartaoRankingHome(topAtletas) }
+        if (perfil != null) {
+            item { SecaoResumoPerfil(perfil) }
+        }
+    }
+}
+
+@Composable
+fun BannerHero(evento: Evento) {
+    Box(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .height(220.dp)
+            .clip(RoundedCornerShape(24.dp))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            CorSecundaria,
+                            CorDourado,
+                            CorPrimaria
+                        )
+                    )
+                )
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            CorPrimaria.copy(alpha = 0.5f),
+                            CorPrimaria.copy(alpha = 0.9f)
+                        )
+                    )
+                )
+        )
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(16.dp)
+        ) {
+            Surface(shape = RoundedCornerShape(100.dp), color = CorDourado) {
+                Text(
+                    text = "DESTAQUE",
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                    color = CorPrimaria,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = evento.titulo,
+                color = Color.White,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "${evento.local} · ${evento.data}",
+                color = Color.White.copy(alpha = 0.8f),
+                fontSize = 14.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Premiação: ${evento.premiacao}",
+                color = CorDourado,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(containerColor = CorSecundaria),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text(text = "Ver detalhes", color = Color.White)
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AcoesRapidas() {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ItemAcao(modifier = Modifier.weight(1f), icone = Icons.Default.AddCircleOutline, label = "Inscrições")
+            ItemAcao(modifier = Modifier.weight(1f), icone = Icons.Default.MilitaryTech, label = "Ranking")
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ItemAcao(modifier = Modifier.weight(1f), icone = Icons.Outlined.EventAvailable, label = "Eventos")
+            ItemAcao(modifier = Modifier.weight(1f), icone = Icons.Outlined.SportsKabaddi, label = "Minhas Lutas")
+        }
+    }
+}
+
+@Composable
+fun SecaoEventos(eventos: List<Evento>) {
+    Column {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Próximos Eventos", fontSize = 18.sp, fontWeight = FontWeight.SemiBold, color = CorPrimaria)
+            TextButton(onClick = {}) {
+                Text(text = "Ver todos", color = CorPrimaria, fontSize = 14.sp)
+                Icon(
+                    imageVector = Icons.Default.ChevronRight,
+                    contentDescription = null,
+                    tint = CorPrimaria,
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(eventos) { evento ->
+                CardEvento(evento = evento, modifier = Modifier.width(240.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun CartaoRankingHome(atletas: List<Atleta>) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = CorPrimaria)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Default.EmojiEvents,
+                    contentDescription = null,
+                    tint = CorDourado,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Ranking Geral", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            atletas.forEachIndexed { index, atleta ->
+                if (index > 0) Spacer(modifier = Modifier.height(8.dp))
+                PessoaRanking(posicao = index + 1, atleta = atleta)
+            }
+        }
+    }
+}
+
+@Composable
+fun SecaoResumoPerfil(perfil: Perfil) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            text = "Seu Resumo",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = CorPrimaria,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            CardResumo(
+                modifier = Modifier.weight(1f),
+                icone = Icons.Default.EmojiEvents,
+                label = "Pontos",
+                valor = "${perfil.pontos}"
+            )
+            CardResumo(
+                modifier = Modifier.weight(1f),
+                icone = Icons.Default.WorkspacePremium,
+                label = "Corda",
+                valor = perfil.corda
+            )
+            CardResumo(
+                modifier = Modifier.weight(1f),
+                icone = Icons.Default.Home,
+                label = "Academia",
+                valor = perfil.academia
+            )
+        }
+    }
+}
+
+@Composable
+fun CardResumo(modifier: Modifier, icone: ImageVector, label: String, valor: String) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = CorContainer)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(imageVector = icone, contentDescription = null, tint = CorSecundaria, modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = label, fontSize = 11.sp, color = CorTextoSecundario)
+            Text(
+                text = valor,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = CorPrimaria,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
