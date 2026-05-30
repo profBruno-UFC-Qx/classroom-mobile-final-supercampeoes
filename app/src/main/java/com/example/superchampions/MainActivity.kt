@@ -11,11 +11,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.runtime.NavEntry
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 
 import com.example.superchampions.ui.components.NavBottomBar
 import com.example.superchampions.ui.navigation.EventsScreenRoute
@@ -67,6 +68,10 @@ fun MainApp() {
                         backStack.removeAt(backStack.size - 1)
                     }
                 },
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator()
+                ),
                 entryProvider = entryProvider {
                     entry<HomeScreenRoute> { HomeScreen() }
                     entry<EventsScreenRoute> { EventsScreen() }
