@@ -23,17 +23,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.superchampions.model.Atleta
+import com.example.superchampions.model.Athlete
 import com.example.superchampions.ui.theme.CorDourado
 import com.example.superchampions.ui.theme.CorPrimaria
 import com.example.superchampions.ui.theme.CorSecundaria
 
 @Composable
-fun PessoaRanking(posicao: Int, atleta: Atleta) {
-    val first = posicao == 1
+fun RankingPersonCard(position: Int, athlete: Athlete, modifier: Modifier = Modifier) {
+    val first = position == 1
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(if (first) CorPrimaria else Color.Transparent)
@@ -43,7 +43,7 @@ fun PessoaRanking(posicao: Int, atleta: Atleta) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "$posicao°",
+                text = "$position°",
                 color = if (first) CorDourado else Color.White.copy(alpha = 0.6f),
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
@@ -58,7 +58,7 @@ fun PessoaRanking(posicao: Int, atleta: Atleta) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = atleta.nome.first().toString(),
+                    text = athlete.name.first().toString(),
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -66,7 +66,7 @@ fun PessoaRanking(posicao: Int, atleta: Atleta) {
             }
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = atleta.nome,
+                text = athlete.name,
                 color = Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
@@ -81,7 +81,7 @@ fun PessoaRanking(posicao: Int, atleta: Atleta) {
             )
         } else {
             Text(
-                text = "${atleta.pontos} pts",
+                text = "${athlete.points} pts",
                 color = Color.White.copy(alpha = 0.5f),
                 fontSize = 12.sp
             )

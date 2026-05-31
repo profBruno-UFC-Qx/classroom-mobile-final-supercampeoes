@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.superchampions.model.Atleta
+import com.example.superchampions.model.Athlete
 import com.example.superchampions.ui.viewmodel.RankingUiState
 import com.example.superchampions.ui.viewmodel.RankingViewModel
 
@@ -42,17 +42,17 @@ fun RankingScreen(viewModel: RankingViewModel = viewModel(factory = RankingViewM
                 }
             }
             is RankingUiState.Success -> {
-                val atletas = (uiState as RankingUiState.Success).atletas
+                val athletes = (uiState as RankingUiState.Success).athletes
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(atletas) { atleta ->
-                        CartaoAtleta(atleta = atleta)
+                    items(athletes) { athlete ->
+                        AthleteCard(athlete = athlete)
                     }
                 }
             }
             is RankingUiState.Error -> {
-                val mensagem = (uiState as RankingUiState.Error).message
+                val message = (uiState as RankingUiState.Error).message
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = mensagem)
+                    Text(text = message)
                 }
             }
         }
@@ -60,7 +60,7 @@ fun RankingScreen(viewModel: RankingViewModel = viewModel(factory = RankingViewM
 }
 
 @Composable
-fun CartaoAtleta(atleta: Atleta) {
+fun AthleteCard(athlete: Athlete) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.padding(12.dp).fillMaxWidth(),
@@ -68,11 +68,11 @@ fun CartaoAtleta(atleta: Atleta) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(text = "#${atleta.posicao} ${atleta.nome}", style = MaterialTheme.typography.titleSmall)
-                Text(text = atleta.academia, style = MaterialTheme.typography.bodySmall)
-                Text(text = "Corda: ${atleta.corda}", style = MaterialTheme.typography.bodySmall)
+                Text(text = "#${athlete.position} ${athlete.name}", style = MaterialTheme.typography.titleSmall)
+                Text(text = athlete.gym, style = MaterialTheme.typography.bodySmall)
+                Text(text = "Corda: ${athlete.cord}", style = MaterialTheme.typography.bodySmall)
             }
-            Text(text = "${atleta.pontos} pts", style = MaterialTheme.typography.titleMedium)
+            Text(text = "${athlete.points} pts", style = MaterialTheme.typography.titleMedium)
         }
     }
 }

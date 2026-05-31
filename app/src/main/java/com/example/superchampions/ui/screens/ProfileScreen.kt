@@ -29,7 +29,7 @@ fun ProfileScreen(viewModel: ProfileViewModel = viewModel(factory = ProfileViewM
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Meu Perfil",
+            text = "Meu Profile",
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -41,20 +41,20 @@ fun ProfileScreen(viewModel: ProfileViewModel = viewModel(factory = ProfileViewM
                 }
             }
             is ProfileUiState.Success -> {
-                val perfil = (uiState as ProfileUiState.Success).perfil
+                val profile = (uiState as ProfileUiState.Success).profile
                 Card(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(text = "Nome: ${perfil.nome}", style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "Academia: ${perfil.academia}", style = MaterialTheme.typography.bodyMedium)
-                        Text(text = "Corda: ${perfil.corda}", style = MaterialTheme.typography.bodyMedium)
-                        Text(text = "Pontos: ${perfil.pontos}", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "Nome: ${profile.name}", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = "Academia: ${profile.gym}", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "Corda: ${profile.cord}", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "Pontos: ${profile.points}", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
             is ProfileUiState.Error -> {
-                val mensagem = (uiState as ProfileUiState.Error).message
+                val message = (uiState as ProfileUiState.Error).message
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = mensagem)
+                    Text(text = message)
                 }
             }
         }

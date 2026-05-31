@@ -1,11 +1,11 @@
 package com.example.superchampions.ui.viewmodel
 
-import com.example.superchampions.model.Atleta
+import com.example.superchampions.model.Athlete
 
 sealed interface RankingUiState {
     data object Loading : RankingUiState
     data class Success(
-        val atletas: List<Atleta> = emptyList()
+        val athletes: List<Athlete> = emptyList()
     ) : RankingUiState
     data class Error(val message: String) : RankingUiState
 }

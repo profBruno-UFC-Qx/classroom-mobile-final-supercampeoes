@@ -21,7 +21,7 @@ import com.example.superchampions.ui.theme.CorContainer
 import com.example.superchampions.ui.theme.CorPrimaria
 
 @Composable
-fun ItemAcao(modifier: Modifier = Modifier, icone: ImageVector, label: String) {
+fun ActionItem(modifier: Modifier = Modifier, icon: ImageVector, label: String) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
@@ -33,7 +33,7 @@ fun ItemAcao(modifier: Modifier = Modifier, icone: ImageVector, label: String) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(imageVector = icone, contentDescription = null, tint = CorPrimaria)
+            Icon(imageVector = icon, contentDescription = null, tint = CorPrimaria)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = label,
